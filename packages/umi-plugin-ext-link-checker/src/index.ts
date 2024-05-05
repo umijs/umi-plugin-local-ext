@@ -17,7 +17,12 @@ export default async function (api: IApi) {
   const extName = 'linkChecker'
 
   const localExt = createLocalExtApi(api)
-  await localExt.init()
+  await localExt.init({
+    activationEvents: [
+      'onLanguage:typescriptreact',
+      'onLanguage:javascriptreact',
+    ],
+  })
 
   // write dynamic/routes.js
   let prevRoutes: any

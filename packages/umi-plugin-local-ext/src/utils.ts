@@ -2,7 +2,8 @@ import path from 'path'
 import type { IApi } from 'umi'
 import fs from 'fs'
 import { umiIcon } from './icon'
-import { isEmpty } from 'lodash'
+import { isEmpty, uniq } from 'lodash'
+import deepmerge from 'deepmerge'
 
 export function createLocalExtApi(api: IApi) {
   const rootPath = path.dirname(api.pkgPath)
@@ -54,7 +55,7 @@ export function createLocalExtApi(api: IApi) {
     fs.writeFileSync(writePath, content, 'utf-8')
   }
 
-  async function init() {
+  async function init(pkgPartial?: Record<string, any>) {
     // create .vscode/extensions/umi
     if (!fs.existsSync(vscExtensionPath)) {
       fs.mkdirSync(vscExtensionPath, { recursive: true })
@@ -64,7 +65,7 @@ export function createLocalExtApi(api: IApi) {
       fs.mkdirSync(dynamicPath, { recursive: true })
     }
     // create package.json
-    const pkg: Record<string, any> = {
+    const pkgWithOverrides: Record<string, any> = {
       name: 'umi-local-ext',
       displayName: 'Umi Local Extension',
       description: 'Local development extension for Umi projects',
@@ -75,17 +76,29 @@ export function createLocalExtApi(api: IApi) {
         vscode: '^1.89.0',
       },
       categories: ['Other'],
+      main: './out/extension.js',
+    }
+    const pkgWithDefault: Record<string, any> = {
       activationEvents: [
         // ts
         'onLanguage:typescript',
         // tsx
         'onLanguage:typescriptreact',
       ],
-      main: './out/extension.js',
       contributes: {},
     }
     const pkgPath = path.join(vscExtensionPath, 'package.json')
-    fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2), 'utf-8')
+    const originPkg = fs.existsSync(pkgPath) ? require(pkgPath) : {}
+    const newPkg = deepmerge.all(
+      [pkgWithDefault, originPkg, pkgPartial || {}, pkgWithOverrides],
+      {
+        arrayMerge: (target, source) => {
+          const newArr = uniq([...target, ...source])
+          return newArr
+        },
+      },
+    )
+    fs.writeFileSync(pkgPath, JSON.stringify(newPkg, null, 2), 'utf-8')
     // write icon
     const iconPath = path.join(vscExtensionPath, 'icon.png')
     const umiIconBase64 = umiIcon.replace(/^data:image\/\w+;base64,/, '')
