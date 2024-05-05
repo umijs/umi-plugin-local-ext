@@ -1,7 +1,7 @@
 {
   "name": "umi-plugin-local-ext",
   "description": "Umi local extension development sdk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "chokidar": "^3.6.0",
+    "deepmerge": "^4.3.1",
     "lodash": "^4.17.21"
   },
   "devDependencies": {

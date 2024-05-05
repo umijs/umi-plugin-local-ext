@@ -67,6 +67,9 @@ importers:
       chokidar:
         specifier: ^3.6.0
         version: 3.6.0
+      deepmerge:
+        specifier: ^4.3.1
+        version: 4.3.1
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
