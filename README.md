@@ -28,10 +28,10 @@ VSCode 插件会自动更新，很难管理版本，不同 VSCode 插件版本�
 
 ## 开发一个 Umi Local Ext 插件来自定义 VSCode
 
-要给 VSCode 新增一项功能，我们需要开发一个 Umi 插件，并在该插件内使用 `umi-plugin-local-ext` ，这是一个提供了工具方法的 SDK 。
+要给 VSCode 新增一项功能，我们需要开发一个 Umi 插件，在其中添加 VSCode 插件功能，并使用 `umi-plugin-local-ext` 与 Umi 集成，这是一个提供了工具方法的 SDK 。
 
 #### 实例
 
-给 `<Link to="${path}" />` 的 `path` 输入部分添加 IDE 提示，并自动检查该 `path` 是否非法
+给 `<Link to="${path}" />` 的 `path` 输入部分添加 IDE 提示，并自动检查该 `path` 是否合法
 
  - 源码：[`umi-plugin-ext-link-checker`](./packages/umi-plugin-ext-link-checker)
