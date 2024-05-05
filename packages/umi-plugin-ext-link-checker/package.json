@@ -23,6 +23,7 @@
   "scripts": {
     "dev": "tsc -w",
     "build": "rm -rf ./dist && tsc",
+    "prepublishOnly": "pnpm build",
     "push": "pnpm publish --registry https://registry.npmjs.com/ --access public"
   },
   "dependencies": {
