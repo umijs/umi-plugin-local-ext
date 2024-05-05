@@ -35,3 +35,7 @@ VSCode 插件会自动更新，很难管理版本，不同 VSCode 插件版本�
 给 `<Link to="${path}" />` 的 `path` 输入部分添加 IDE 提示，并自动检查该 `path` 是否合法
 
  - 源码：[`umi-plugin-ext-link-checker`](./packages/umi-plugin-ext-link-checker)
+
+ - 预览：
+
+    <img src='https://cdn.jsdelivr.net/gh/fz6m/Private-picgo@moe-2024/img/202405051248500.gif' width='25%' />
