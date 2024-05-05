@@ -1,11 +1,25 @@
 {
   "name": "umi-plugin-ext-link-checker",
   "version": "1.0.0",
+  "description": "Umi plugin for checking <Link /> to path",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "author": "fz6m",
+  "homepage": "https://github.com/umijs/umi-plugin-local-ext#README",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/umijs/umi-plugin-local-ext"
+  },
+  "keywords": [
+    "umi",
+    "umi-plugin",
+    "umi-plugin-local-ext",
+    "umi-plugin-ext-link-checker"
+  ],
+  "license": "MIT",
   "scripts": {
     "dev": "tsc -w",
     "build": "rm -rf ./dist && tsc"

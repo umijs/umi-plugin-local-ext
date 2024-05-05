@@ -1,11 +1,24 @@
 {
   "name": "umi-plugin-local-ext",
+  "description": "Umi local extension development sdk",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "author": "fz6m",
+  "homepage": "https://github.com/umijs/umi-plugin-local-ext#README",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/umijs/umi-plugin-local-ext"
+  },
+  "keywords": [
+    "umi",
+    "umi-plugin",
+    "umi-plugin-local-ext"
+  ],
+  "license": "MIT",
   "scripts": {
     "build": "rm -rf ./dist && tsc",
     "dev": "tsc -w"
