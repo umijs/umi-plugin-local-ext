@@ -2,6 +2,7 @@ import path from 'path'
 import type { IApi } from 'umi'
 import fs from 'fs'
 import { umiIcon } from './icon'
+import { isEmpty } from 'lodash'
 
 export function createLocalExtApi(api: IApi) {
   const rootPath = path.dirname(api.pkgPath)
@@ -11,7 +12,14 @@ export function createLocalExtApi(api: IApi) {
   const currentPkg = require(currenPkgPath)
 
   let isExtSourceFileWritten = false
-  function writeExtSourceFile(name: string, content: string) {
+  function writeExtSourceFile(
+    name: string,
+    content: string,
+    depsMap?: Record<string, string>,
+  ) {
+    if (!isEmpty(depsMap)) {
+      content = replaceImportPath(content, depsMap)
+    }
     if (isExtSourceFileWritten) {
       throw new Error(
         `Location extension source file has been written, only write once. (${name})`,
@@ -95,11 +103,7 @@ export function createLocalExtApi(api: IApi) {
       lodash: path.dirname(require.resolve('lodash/package.json')),
       chokidar: path.dirname(require.resolve('chokidar/package.json')),
     }
-    let newExtContent = originExtContent
-    Object.entries(importDeps).forEach(([name, depPath]) => {
-      const matchReg = new RegExp(`require\\("${name}"\\)`, 'g')
-      newExtContent = newExtContent.replace(matchReg, `require("${depPath}")`)
-    })
+    const newExtContent = replaceImportPath(originExtContent, importDeps)
     fs.writeFileSync(extensionJsPath, newExtContent, 'utf-8')
     // update git ignore file
     const ignorePath = path.join(vscExtensionPath, '.gitignore')
@@ -111,5 +115,16 @@ export function createLocalExtApi(api: IApi) {
     writeDynamicDataFileToExtDir,
     writeExtSourceFile,
     init,
+    replaceImportPath,
   }
+}
+
+function replaceImportPath(code: string, depsMap: Record<string, string>) {
+  Object.entries(depsMap).forEach(([name, depPath]) => {
+    const reg = new RegExp(`require\\("${name}"\\)`, 'g')
+    const reg2 = new RegExp(`require\\('${name}'\\)`, 'g')
+    code = code.replace(reg, `require("${depPath}")`)
+    code = code.replace(reg2, `require('${depPath}')`)
+  })
+  return code
 }
