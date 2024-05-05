@@ -65,18 +65,23 @@ function detectLinkToPath() {
 
 function detectLinkToPathDignostic() {
   const dignosticCollection = vscode.languages.createDiagnosticCollection('umi')
+  // on open file
+  vscode.workspace.onDidOpenTextDocument((document) => {
+    updateDiagnostics(document, dignosticCollection)
+  })
+  // on change
   vscode.workspace.onDidChangeTextDocument((event) => {
-    const lang = event.document.languageId
-    const schema = event.document.uri.scheme
-    if (lang !== 'typescriptreact' || schema !== 'file') {
-      return
-    }
     updateDiagnostics(event.document, dignosticCollection)
   })
   function updateDiagnostics(
     document: vscode.TextDocument,
     collection: vscode.DiagnosticCollection,
   ) {
+    const lang = document.languageId
+    const schema = document.uri.scheme
+    if (lang !== 'typescriptreact' || schema !== 'file') {
+      return
+    }
     const diagnostics: vscode.Diagnostic[] = []
     const text = document.getText()
     // TODO: use ast to parse
