@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, statSync } from 'fs'
+import { existsSync, readdirSync, statSync, writeFileSync } from 'fs'
 import path, { join } from 'path'
 import * as vscode from 'vscode'
 import chokidar from 'chokidar'
@@ -22,7 +22,7 @@ function loadPlugin(file: string) {
       module: mod,
     }
     vscode.window.showInformationMessage(
-      `Loaded Umi local plugin: ${path.basename(path.dirname(file))}`,
+      `Umi local plugin: ${path.basename(path.dirname(file))} has been loaded`,
     )
     return mod
   }
@@ -33,7 +33,56 @@ function loadPlugin(file: string) {
   return
 }
 
+interface IVersion {
+  usingVersion: string
+}
+
+let unwatch: (() => void) | undefined
+let dispose: (() => void) | undefined
+
+const extPkgPath = path.join(__dirname, '../package.json')
+const versionInfoPath = path.join(__dirname, '../version.json')
+function checkUpdate() {
+  delete require.cache[extPkgPath]
+  const extPkg = require(extPkgPath)
+  if (!existsSync(versionInfoPath)) {
+    // create
+    const versionInfo: IVersion = {
+      usingVersion: extPkg.version,
+    }
+    writeFileSync(versionInfoPath, JSON.stringify(versionInfo, null, 2), 'utf-8')
+  } else {
+    delete require.cache[versionInfoPath]
+    const versionInfo: IVersion = require(versionInfoPath)
+    const isVersionChanged = versionInfo.usingVersion !== extPkg.version
+    // show reload vscode message
+    if (isVersionChanged) {
+      vscode.window.showInformationMessage(
+        'Umi local extension has been updated, please reload vscode window to take effect',
+        'Reload Window',
+      ).then((res) => {
+        if (res === 'Reload Window') {
+          // update version
+          versionInfo.usingVersion = extPkg.version
+          writeFileSync(versionInfoPath, JSON.stringify(versionInfo, null, 2), 'utf-8')
+          vscode.commands.executeCommand('workbench.action.reloadWindow')
+        }
+      })
+    }
+  }
+}
+const checkUpdateDebounce = debounce(checkUpdate, 1000)
+
 export function activate(context: vscode.ExtensionContext) {
+  checkUpdate()
+  // watch version change
+  const pkgWatcher = chokidar.watch(extPkgPath)
+  pkgWatcher.on('change', () => {
+    try {
+      checkUpdateDebounce()
+    } catch {}
+  })
+
   const loadNewPlugin = () => {
     const dynamicDir = path.join(__dirname, '../dynamic')
     if (!existsSync(dynamicDir)) {
@@ -56,9 +105,16 @@ export function activate(context: vscode.ExtensionContext) {
       if (!mod) {
         return
       }
-      const { activate } = mod
+      const { activate, deactivate } = mod
       if (activate && typeof activate === 'function') {
         activate(context)
+      }
+      if (deactivate && typeof deactivate === 'function') {
+        const originDispose = dispose
+        dispose = () => {
+          originDispose?.()
+          deactivate()
+        }
       }
     })
   }
@@ -74,6 +130,14 @@ export function activate(context: vscode.ExtensionContext) {
       loadNewPluginDebounce()
     })
   })
+
+  unwatch = () => {
+    watcher.close()
+    pkgWatcher.close()
+  }
 }
 
-export function deactivate() {}
+export function deactivate() {
+  unwatch?.()
+  dispose?.()
+}
