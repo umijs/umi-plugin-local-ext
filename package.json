@@ -1,0 +1,16 @@
+{
+  "name": "umi-plugin-local-ext-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "pnpm --filter './packages/*' run build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.8",
+    "bochi": "^5.0.0",
+    "kokona": "^8.0.2",
+    "tsx": "^4.9.1",
+    "typescript": "5.5.0-beta",
+    "umi": "^4.1.10"
+  }
+}

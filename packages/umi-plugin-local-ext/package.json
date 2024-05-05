@@ -1,0 +1,21 @@
+{
+  "name": "umi-plugin-local-ext",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf ./dist && tsc",
+    "dev": "tsc -w"
+  },
+  "dependencies": {
+    "chokidar": "^3.6.0",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.1",
+    "@types/vscode": "^1.89.0"
+  }
+}
