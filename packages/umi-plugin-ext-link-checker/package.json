@@ -22,7 +22,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "tsc -w",
-    "build": "rm -rf ./dist && tsc"
+    "build": "rm -rf ./dist && tsc",
+    "push": "pnpm publish --registry https://registry.npmjs.com/ --access public"
   },
   "dependencies": {
     "lodash": "^4.17.21",

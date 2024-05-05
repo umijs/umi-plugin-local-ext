@@ -20,8 +20,9 @@
   ],
   "license": "MIT",
   "scripts": {
+    "dev": "tsc -w",
     "build": "rm -rf ./dist && tsc",
-    "dev": "tsc -w"
+    "push": "pnpm publish --registry https://registry.npmjs.com/ --access public"
   },
   "dependencies": {
     "chokidar": "^3.6.0",
